@@ -1,5 +1,5 @@
 *.log
 *.pot
 *.pyc
-sqlite3.db
+blog/db.sqlite3
 blog_env/
