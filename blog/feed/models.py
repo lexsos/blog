@@ -22,6 +22,9 @@ class Post(models.Model):
         verbose_name=_('post author'),
     )
 
+    def __str__(self):
+        return '{0} {1} {2}'.format(self.create_at, self.author, self.title)
+
     class Meta:
         verbose_name_plural = _('posts items')
         verbose_name = _('post item')
