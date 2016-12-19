@@ -23,17 +23,19 @@ class Post(models.Model):
     )
 
     def save(self, *args, **kwargs):
-        subscription_set = None
-        if not self.pk:
-            subscription_set = self.author.subscription_set.all()
-
+        is_new = self.pk is None
         super(Post, self).save(*args, **kwargs)
-        # TODO: write real method for send notifications to scribers
-        if subscription_set:
-            print ('Create new post id:', self.pk)
-            print('Send messages to scribers:')
-            for subscription in subscription_set:
-                print('\tSend message to ', subscription.subscriber, ' ', subscription.subscriber.email)
+        if is_new:
+            self.send_notifications()
+
+    # TODO: Write real method for send notifications to scribers with using celery
+    def send_notifications(self):
+        if self.pk is None:
+            return
+        subscription_set = self.author.subscription_set.all()
+        print('Send messages to scribers:')
+        for subscription in subscription_set:
+            print('\tSend message to', subscription.subscriber, subscription.subscriber.email)
 
     def __str__(self):
         return '{0} {1} {2}'.format(self.create_at, self.author, self.title)
