@@ -22,6 +22,15 @@ class Post(models.Model):
         verbose_name=_('post author'),
     )
 
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            # TODO: write real method for send notifications to scribers
+            subscription_set = self.author.subscription_set.all()
+            print('Send messages to scribers:')
+            for subscription in subscription_set:
+                print('\tSend message to ', subscription.subscriber, ' ', subscription.subscriber.email)
+        super(Post, self).save(*args, **kwargs)
+
     def __str__(self):
         return '{0} {1} {2}'.format(self.create_at, self.author, self.title)
 
@@ -36,12 +45,12 @@ class Subscription(models.Model):
     author = models.ForeignKey(
         User,
         verbose_name=_('author'),
-        related_name='subscription_authors_set',
+        related_name='subscription_set',
     )
     subscriber = models.ForeignKey(
         User,
         verbose_name=_('subscriber'),
-        related_name='subscription_subscriber_set',
+        related_name='+',
     )
 
     class Meta:

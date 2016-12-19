@@ -11,7 +11,7 @@ class PostAdmin(admin.ModelAdmin):
 
 class SubscriptionAdmin(admin.ModelAdmin):
     list_filter = ('author', 'subscriber')
-    list_display = ('author', 'subscriber')
+    list_display = ('subscriber', 'author')
 
 
 class ViewMarkAdmin(admin.ModelAdmin):
