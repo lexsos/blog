@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+
+{% block main_content %}
+  {% for feed in feed_list %}
+    <h3>{{ feed.post.title }} {% if not feed.is_red %}(новый){% endif %}</h3>
+    <p>{{ feed.post.content }}</p>
+    <p>{{ feed.post.create_at }}</p>
+  {% endfor %}
+{% endblock %}
