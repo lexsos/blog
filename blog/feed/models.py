@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
 
-
 class Post(models.Model):
 
     title = models.CharField(
@@ -26,15 +25,17 @@ class Post(models.Model):
         is_new = self.pk is None
         super(Post, self).save(*args, **kwargs)
         if is_new:
-            self.send_notifications()
+            self.on_post_create()
 
-    # TODO: Write real method for send notifications to scribers with using celery
-    def send_notifications(self):
+    # TODO: Write real method for send notifications to scribers
+    # TODO: Rewrite with using celery
+    def on_post_create(self):
         if self.pk is None:
             return
         subscription_set = self.author.subscription_set.all()
-        print('Send messages to scribers:')
         for subscription in subscription_set:
+            feed = Feed(post=self, subscriber=subscription.subscriber)
+            feed.save()
             print('\tSend message to', subscription.subscriber, subscription.subscriber.email)
 
     def __str__(self):
@@ -65,7 +66,7 @@ class Subscription(models.Model):
         unique_together = (('author', 'subscriber'),)
 
 
-class ViewMark(models.Model):
+class Feed(models.Model):
 
     post = models.ForeignKey(
         Post,
@@ -75,8 +76,13 @@ class ViewMark(models.Model):
         User,
         verbose_name=_('subscriber'),
     )
+    is_red = models.BooleanField(
+        verbose_name=_('post is red'),
+        default=False,
+    )
 
     class Meta:
-        verbose_name_plural = _('view marks items')
-        verbose_name = _('view mark item')
+        verbose_name_plural = _('feed items')
+        verbose_name = _('feed item')
         unique_together = (('post', 'subscriber'),)
+        ordering = ('-post__create_at', )

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
-from .models import Post, Subscription, ViewMark
+from .models import Post, Subscription, Feed
 
 
 class PostAdmin(admin.ModelAdmin):
@@ -14,11 +14,11 @@ class SubscriptionAdmin(admin.ModelAdmin):
     list_display = ('subscriber', 'author')
 
 
-class ViewMarkAdmin(admin.ModelAdmin):
+class FeedAdmin(admin.ModelAdmin):
     list_filter = ('subscriber', )
-    list_display = ('subscriber', 'post')
+    list_display = ('post', 'subscriber', 'is_red')
 
 
 admin.site.register(Post, PostAdmin)
 admin.site.register(Subscription, SubscriptionAdmin)
-admin.site.register(ViewMark, ViewMarkAdmin)
+admin.site.register(Feed, FeedAdmin)
