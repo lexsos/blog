@@ -22,6 +22,7 @@ class FeedView(LoginUrlMixin, LoginRequiredMixin, ListView):
     def get_queryset(self):
         queryset = super(FeedView, self).get_queryset()
         if self.request.user.is_authenticated():
+            # TODO: use prefetch_related or select_related if need
             queryset = queryset.filter(subscriber=self.request.user)
         return queryset
 
