@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+
+{% block main_content %}
+  {% for author in user_list %}
+    <p>{{ author }}</p>
+    <form method="post" action="{% url 'blog_subscribe' author.pk %}">
+        {% csrf_token %}
+        <input type="submit" value="Подписаться" />
+    </form>
+    <form method="post" action="{% url 'blog_unsubscribe' author.pk %}">
+        {% csrf_token %}
+        <input type="submit" value="Отписаться" />
+    </form>
+  {% endfor %}
+{% endblock %}

@@ -2,7 +2,7 @@
 
 
 {% block main_content %}
-  <form action="" method="post">{% csrf_token %}
+  <form action="{% url 'blog_create_post' %}" method="post">{% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Добавить" />
   </form>

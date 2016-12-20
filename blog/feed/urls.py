@@ -1,7 +1,13 @@
 from django.conf.urls import url
 from django.contrib.auth import views as auth_views
 
-from .views import FeedView, PostCreate
+from .views import (
+    FeedView,
+    PostCreate,
+    AuthorListView,
+    SubscribeView,
+    UnsubscribeView,
+)
 
 
 urlpatterns = [
@@ -17,5 +23,17 @@ urlpatterns = [
         auth_views.login,
         {'template_name': 'feed/login.html'},
         name='login',
+        ),
+    url(r'^authors/$',
+        AuthorListView.as_view(),
+        name='blog_authors_list',
+        ),
+    url(r'^subscribe/(?P<pk>\d+)/$',
+        SubscribeView.as_view(),
+        name='blog_subscribe',
+        ),
+    url(r'^unsubscribe/(?P<pk>\d+)/$',
+        UnsubscribeView.as_view(),
+        name='blog_unsubscribe',
         ),
 ]
