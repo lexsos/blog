@@ -7,6 +7,7 @@ from .views import (
     AuthorListView,
     SubscribeView,
     UnsubscribeView,
+    MarkReadView,
 )
 
 
@@ -32,12 +33,16 @@ urlpatterns = [
         AuthorListView.as_view(),
         name='blog_authors_list',
         ),
-    url(r'^subscribe/(?P<pk>\d+)/$',
+    url(r'^subscribe/(?P<author_id>\d+)/$',
         SubscribeView.as_view(),
         name='blog_subscribe',
         ),
-    url(r'^unsubscribe/(?P<pk>\d+)/$',
+    url(r'^unsubscribe/(?P<author_id>\d+)/$',
         UnsubscribeView.as_view(),
         name='blog_unsubscribe',
+        ),
+    url(r'^mark_read/(?P<post_id>\d+)/$',
+        MarkReadView.as_view(),
+        name='blog_mark_read',
         ),
 ]

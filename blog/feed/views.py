@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 
-from .models import Feed, Subscription
+from .models import Feed, Subscription, Post
 from .forms import PostCreateForm
 
 
@@ -54,7 +54,7 @@ class SubscribeView(LoginUrlMixin, LoginRequiredMixin, RedirectView):
 
     def post(self, request, *args, **kwargs):
         try:
-            author = User.objects.get(pk=kwargs.get('pk', -1))
+            author = User.objects.get(pk=kwargs.get('author_id', -1))
             subscriber = self.request.user
             if subscriber.is_authenticated():
                 Subscription.objects.get_or_create(author=author, subscriber=subscriber)
@@ -70,10 +70,26 @@ class UnsubscribeView(LoginUrlMixin, LoginRequiredMixin, RedirectView):
 
     def post(self, request, *args, **kwargs):
         try:
-            author = User.objects.get(pk=kwargs.get('pk', -1))
+            author = User.objects.get(pk=kwargs.get('author_id', -1))
             subscriber = self.request.user
             if subscriber.is_authenticated():
                 Subscription.objects.filter(author=author, subscriber=subscriber).delete()
         except User.DoesNotExist:
             pass
         return super(UnsubscribeView, self).post(request, *args, **kwargs)
+
+
+class MarkReadView(LoginUrlMixin, LoginRequiredMixin, RedirectView):
+
+    def get_redirect_url(self, *args, **kwargs):
+        return reverse('blog_feed')
+
+    def post(self, request, *args, **kwargs):
+        try:
+            post = Post.objects.get(pk=kwargs.get('post_id', -1))
+            subscriber = self.request.user
+            if subscriber.is_authenticated():
+                Feed.objects.filter(post=post, subscriber=subscriber).update(is_red=True)
+        except Post.DoesNotExist:
+            pass
+        return super(MarkReadView, self).post(request, *args, **kwargs)

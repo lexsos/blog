@@ -4,6 +4,12 @@
 {% block main_content %}
   {% for feed in feed_list %}
     <h3>{{ feed.post.title }} {% if not feed.is_red %}(новый){% endif %}</h3>
+    {% if not feed.is_red %}
+      <form method="post" action="{% url 'blog_mark_read' feed.post.pk %}">
+        {% csrf_token %}
+        <input type="submit" value="Пометить прочитанным" />
+      </form>
+    {% endif %}
     <p>{{ feed.post.author }}</p>
     <p>{{ feed.post.content }}</p>
     <p>{{ feed.post.create_at }}</p>
