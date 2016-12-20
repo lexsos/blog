@@ -34,8 +34,14 @@ class Post(models.Model):
             return
         subscription_set = self.author.subscription_set.all()
         for subscription in subscription_set:
-            Feed(post=self, subscriber=subscription.subscriber, subscription=subscription).save()
-            print('\tSend message to', subscription.subscriber, subscription.subscriber.email)
+            feed = Feed()
+            feed.post = self
+            feed.subscriber = subscription.subscriber
+            feed.subscription = subscription
+            feed.save()
+            print('\tSend message to',
+                  subscription.subscriber,
+                  subscription.subscriber.email)
 
     def __str__(self):
         return '{0} {1} {2}'.format(self.create_at, self.author, self.title)
@@ -68,7 +74,11 @@ class Subscription(models.Model):
     # TODO: Rewrite with using celery
     def on_subscription_create(self):
         for post in self.author.post_set.all():
-            Feed(post=post, subscriber=self.subscriber, subscription=self).save()
+            feed = Feed()
+            feed.subscription = self
+            feed.post = post
+            feed.subscriber = self.subscriber
+            feed.save()
 
     class Meta:
         verbose_name_plural = _('subscriptions items')

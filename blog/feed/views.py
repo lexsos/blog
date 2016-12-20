@@ -3,7 +3,7 @@ from django.views.generic.edit import FormView
 from django.core.urlresolvers import reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from .models import Feed, Post
+from .models import Feed
 from .forms import PostCreateForm
 
 

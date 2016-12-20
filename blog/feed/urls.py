@@ -5,7 +5,17 @@ from .views import FeedView, PostCreate
 
 
 urlpatterns = [
-    url(r'^feed/$', FeedView.as_view(), name='blog_feed'),
-    url(r'^new_post/$', PostCreate.as_view(), name='blog_create_post'),
-    url(r'^login/$', auth_views.login, {'template_name': 'feed/login.html'}, name='login'),
+    url(r'^feed/$',
+        FeedView.as_view(),
+        name='blog_feed',
+        ),
+    url(r'^new_post/$',
+        PostCreate.as_view(),
+        name='blog_create_post',
+        ),
+    url(r'^login/$',
+        auth_views.login,
+        {'template_name': 'feed/login.html'},
+        name='login',
+        ),
 ]
