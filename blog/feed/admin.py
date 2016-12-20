@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
+from django.conf import settings
 
 from .models import Post, Subscription, Feed
 
@@ -21,4 +22,5 @@ class FeedAdmin(admin.ModelAdmin):
 
 admin.site.register(Post, PostAdmin)
 admin.site.register(Subscription, SubscriptionAdmin)
-admin.site.register(Feed, FeedAdmin)
+if settings.DEBUG:
+    admin.site.register(Feed, FeedAdmin)

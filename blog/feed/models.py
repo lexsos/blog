@@ -34,8 +34,7 @@ class Post(models.Model):
             return
         subscription_set = self.author.subscription_set.all()
         for subscription in subscription_set:
-            feed = Feed(post=self, subscriber=subscription.subscriber)
-            feed.save()
+            Feed(post=self, subscriber=subscription.subscriber, subscription=subscription).save()
             print('\tSend message to', subscription.subscriber, subscription.subscriber.email)
 
     def __str__(self):
@@ -60,6 +59,17 @@ class Subscription(models.Model):
         related_name='+',
     )
 
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        super(Subscription, self).save(*args, **kwargs)
+        if is_new:
+            self.on_subscription_create()
+
+    # TODO: Rewrite with using celery
+    def on_subscription_create(self):
+        for post in self.author.post_set.all():
+            Feed(post=post, subscriber=self.subscriber, subscription=self).save()
+
     class Meta:
         verbose_name_plural = _('subscriptions items')
         verbose_name = _('subscription item')
@@ -79,6 +89,10 @@ class Feed(models.Model):
     is_red = models.BooleanField(
         verbose_name=_('post is red'),
         default=False,
+    )
+    subscription = models.ForeignKey(
+        Subscription,
+        verbose_name=_('subscription item'),
     )
 
     class Meta:
