@@ -1,9 +1,10 @@
 from django.views.generic.list import ListView
 from django.views.generic.edit import FormView
-from django.views.generic.base import RedirectView
+from django.views.generic.base import RedirectView, TemplateView
 from django.core.urlresolvers import reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
+from django.db.models import Q
 
 from .models import Feed, Subscription, Post
 from .forms import PostCreateForm
@@ -43,9 +44,17 @@ class PostCreate(LoginUrlMixin, LoginRequiredMixin, FormView):
         return super(PostCreate, self).form_valid(form)
 
 
-class AuthorListView(LoginUrlMixin, LoginRequiredMixin, ListView):
+class AuthorListView(LoginUrlMixin, LoginRequiredMixin, TemplateView):
+
     template_name = 'feed/authors_list.html'
-    model = User
+
+    def get_context_data(self, **kwargs):
+        context = super(AuthorListView, self).get_context_data(**kwargs)
+        subscriber = self.request.user
+        if subscriber.is_authenticated():
+            context['scribed_list'] = User.objects.filter(subscription_set__subscriber=subscriber.pk).all()
+            context['unscribed_list'] = User.objects.filter(~Q(subscription_set__subscriber=subscriber.pk)).all()
+        return context
 
 
 class SubscribeView(LoginUrlMixin, LoginRequiredMixin, RedirectView):
